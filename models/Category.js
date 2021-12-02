@@ -43,7 +43,7 @@ const validate = (category) => {
   const schema = Joi.object({
     name: Joi.string().required().min(3),
     is_parent: Joi.boolean().default(false),
-    parent_id: Joi.objectId().default(null),
+    parent_id: Joi.string().default(null).allow(null),
     is_popular: Joi.boolean().default(false),
     status: Joi.string()
       .required()
