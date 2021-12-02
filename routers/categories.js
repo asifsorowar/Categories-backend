@@ -16,7 +16,10 @@ router.post("/", async (req, res) => {
   const { error, value } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  const category = new Category(value);
+  let category = await Category.findOne({ name: req.body.name });
+  if (category) return res.status(400).send("this name has a category!");
+
+  category = new Category(value);
   await category.save();
 
   return res.status(201).send(category);

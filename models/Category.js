@@ -1,33 +1,46 @@
 const mongoose = require("mongoose");
 const Joi = require("joi");
 
-const categorySchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
+const categorySchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      uppercase: true,
+      trim: true,
+      unique: true,
+    },
+    is_parent: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
+    parent_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      required: false,
+      default: null,
+    },
+    is_popular: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
+    status: {
+      type: String,
+      enum: ["New", "Used"],
+      required: true,
+      default: "New",
+    },
   },
-  is_parent: {
-    type: Boolean,
-    required: true,
-    default: false,
-  },
-  parent_id: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Category",
-    required: false,
-    default: null,
-  },
-  is_popular: {
-    type: Boolean,
-    required: true,
-    default: false,
-  },
-  status: {
-    type: String,
-    enum: ["New", "Used"],
-    required: true,
-    default: "New",
-  },
+  { toJSON: { virtuals: true }, toObject: { virtuals: true } }
+);
+
+categorySchema.virtual("childNodes", {
+  ref: "Category",
+  localField: "_id",
+  foreignField: "parent_id",
+  justOne: false,
 });
 
 categorySchema.pre("remove", async function (next) {
